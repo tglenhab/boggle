@@ -6,14 +6,17 @@ import Html exposing (Html, div, span, text, button, h1)
 import Html.Events exposing (onClick)
 import Html.Attributes exposing (style)
 import Browser
+import Time
+import Tuple exposing (first, second)
     
 type alias Model
-    = Maybe Board
+    = (Maybe Board, Int)
 
 type Msg
     = GetNew
     | Generated Board
-
+    | Tick Time.Posix
+      
 type alias Board
     = List String
 
@@ -66,7 +69,7 @@ main =
     Browser.document
         { init =
             (\ flags ->
-                ( Nothing
+                ( (Nothing, -1)
                 , newBoard
                 )
             )
@@ -80,9 +83,10 @@ main =
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
     case msg of
-        GetNew -> (Nothing, newBoard)
-        Generated b -> (Just b, Cmd.none)
-
+        GetNew -> ((Nothing, 0), newBoard)
+        Generated b -> ((Just b, 180), Cmd.none)
+        Tick _ -> ((first model, (second model) - 1), Cmd.none)
+            
 view : Model -> Browser.Document Msg
 view model =
     Browser.Document
@@ -91,12 +95,27 @@ view model =
               , style "flex-direction" "column"
               , style "align-items" "center"
               ]
-              [ renderBoard model
+              [ if (first model /= Nothing) then renderTimer (second model) else span [] []
+              , renderBoard (first model)
               , button [onClick GetNew, style "margin" "20px"] [text "New Board"]
               ]
         ]
 
-renderBoard : Model -> Html Msg
+renderTimer : Int -> Html Msg
+renderTimer i =
+    if i > 0 then
+        h1 [] [text ((String.fromInt (i // 60)) ++ ":" ++ (normalize (String.fromInt (modBy 60 i))))]
+    else
+        h1 [ style "color" (if (modBy 2 i) == 0 then "red" else "black")] [text "0:00"]  
+
+normalize : String -> String
+normalize s =
+    if (String.length s) < 2 then
+        "0" ++ s
+    else
+        s
+        
+renderBoard : Maybe Board -> Html Msg
 renderBoard model =
     case model of
         Nothing -> span [] []
@@ -131,4 +150,4 @@ renderLine start len board =
 
 
 subs _ =
-    Sub.none
+    Time.every 1000 Tick
