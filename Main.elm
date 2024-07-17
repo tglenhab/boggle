@@ -96,7 +96,7 @@ view model =
               , style "align-items" "center"
               ]
               [ if (first model /= Nothing) then renderTimer (second model) else span [] []
-              , renderBoard (first model)
+              , renderBoard (first model) (second model)
               , button [onClick GetNew, style "margin" "20px"] [text "New Board"]
               ]
         ]
@@ -115,14 +115,15 @@ normalize s =
     else
         s
         
-renderBoard : Maybe Board -> Html Msg
-renderBoard model =
+renderBoard : Maybe Board -> Int -> Html Msg
+renderBoard model i =
     case model of
         Nothing -> span [] []
         Just b ->
             div [ style "display" "flex"
                 , style "flex-direction" "column"
                 , style "flex" "1 1 0px"
+                , style "color" (if 0 >= i && i >= -3 then "red" else "black")
                 ]
                 [ renderLine 0  4 b
                 , renderLine 4  4 b

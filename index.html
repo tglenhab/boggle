@@ -6110,6 +6110,7 @@ var $elm$html$Html$Events$onClick = function (msg) {
 		'click',
 		$elm$json$Json$Decode$succeed(msg));
 };
+var $elm$core$Basics$ge = _Utils_ge;
 var $elm$core$List$drop = F2(
 	function (n, list) {
 		drop:
@@ -6304,28 +6305,33 @@ var $author$project$Main$renderLine = F3(
 					len,
 					A2($elm$core$List$drop, start, board))));
 	});
-var $author$project$Main$renderBoard = function (model) {
-	if (model.$ === 'Nothing') {
-		return A2($elm$html$Html$span, _List_Nil, _List_Nil);
-	} else {
-		var b = model.a;
-		return A2(
-			$elm$html$Html$div,
-			_List_fromArray(
-				[
-					A2($elm$html$Html$Attributes$style, 'display', 'flex'),
-					A2($elm$html$Html$Attributes$style, 'flex-direction', 'column'),
-					A2($elm$html$Html$Attributes$style, 'flex', '1 1 0px')
-				]),
-			_List_fromArray(
-				[
-					A3($author$project$Main$renderLine, 0, 4, b),
-					A3($author$project$Main$renderLine, 4, 4, b),
-					A3($author$project$Main$renderLine, 8, 4, b),
-					A3($author$project$Main$renderLine, 12, 4, b)
-				]));
-	}
-};
+var $author$project$Main$renderBoard = F2(
+	function (model, i) {
+		if (model.$ === 'Nothing') {
+			return A2($elm$html$Html$span, _List_Nil, _List_Nil);
+		} else {
+			var b = model.a;
+			return A2(
+				$elm$html$Html$div,
+				_List_fromArray(
+					[
+						A2($elm$html$Html$Attributes$style, 'display', 'flex'),
+						A2($elm$html$Html$Attributes$style, 'flex-direction', 'column'),
+						A2($elm$html$Html$Attributes$style, 'flex', '1 1 0px'),
+						A2(
+						$elm$html$Html$Attributes$style,
+						'color',
+						((0 >= i) && (_Utils_cmp(i, -3) > -1)) ? 'red' : 'black')
+					]),
+				_List_fromArray(
+					[
+						A3($author$project$Main$renderLine, 0, 4, b),
+						A3($author$project$Main$renderLine, 4, 4, b),
+						A3($author$project$Main$renderLine, 8, 4, b),
+						A3($author$project$Main$renderLine, 12, 4, b)
+					]));
+		}
+	});
 var $elm$core$Basics$modBy = _Basics_modBy;
 var $author$project$Main$normalize = function (s) {
 	return ($elm$core$String$length(s) < 2) ? ('0' + s) : s;
@@ -6371,7 +6377,7 @@ var $author$project$Main$view = function (model) {
 				_List_fromArray(
 					[
 						(!_Utils_eq(model.a, $elm$core$Maybe$Nothing)) ? $author$project$Main$renderTimer(model.b) : A2($elm$html$Html$span, _List_Nil, _List_Nil),
-						$author$project$Main$renderBoard(model.a),
+						A2($author$project$Main$renderBoard, model.a, model.b),
 						A2(
 						$elm$html$Html$button,
 						_List_fromArray(
